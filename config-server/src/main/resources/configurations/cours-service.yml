@@ -1,0 +1,25 @@
+server:
+  port: 8070
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cours?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: safa
+  jpa:
+    hibernate:
+      ddl-auto: update # Utilisez 'update' pour éviter de recréer les tables à chaque démarrage
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: coursConfirmation:com.safa.plate_elearning.kafka.CoursConfirmation
+
+application:
+  config:
+    user-url: http://localhost:8090
