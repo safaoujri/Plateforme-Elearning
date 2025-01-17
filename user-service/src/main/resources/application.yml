@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: user-service

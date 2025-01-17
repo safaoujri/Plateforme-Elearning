@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
 public record UserRequest(
-        @NotNull(message = "User ID must not be null")
+//        @NotNull(message = "User ID must not be null")
         Long id,
         @NotNull(message = "User nom is required")
         String nom,
@@ -13,9 +13,13 @@ public record UserRequest(
         String prenom,
         @Email(message = "User Email is not valid email adress")
         String email,
+        @NotNull(message = "Password is required")
         String motDePasse,
+
         String photoProfil,
+        @NotNull(message = "Niveau is required")
         String niveauEtudes,
+        @NotNull(message = "Role is required")
         Role role
 ) {
 }

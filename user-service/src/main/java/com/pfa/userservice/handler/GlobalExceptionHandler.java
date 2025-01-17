@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -25,11 +26,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
-        var errors = new HashMap<String, String>();
+        Map<String, String> errors = new HashMap<>();
         exp.getBindingResult().getAllErrors()
                 .forEach(error -> {
-                    var fieldName = ((FieldError) error).getField();
-                    var errorMessage = error.getDefaultMessage();
+                    String fieldName = ((FieldError) error).getField();
+                    String errorMessage = error.getDefaultMessage();
                     errors.put(fieldName, errorMessage);
                 });
 
