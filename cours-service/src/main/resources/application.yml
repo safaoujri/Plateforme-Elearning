@@ -1,6 +1,14 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://localhost:8888  # Assurez-vous que cette syntaxe est correcte pour votre version de Spring Cloud
   application:
     name: cours-service
-
+  video:
+    upload:
+      dir: C:/Users/user/Documents  # Vérifiez que ce chemin est valide et accessible
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

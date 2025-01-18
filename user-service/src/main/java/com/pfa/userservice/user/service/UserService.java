@@ -11,8 +11,16 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -22,6 +30,8 @@ import static java.lang.String.format;
 public class UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
+    private static final String PHOTO_DIRECTORY = "C:/Users/user/Documents";
+
 
     public Long createUser(@Valid UserRequest request) {
         var user = repository.save(mapper.toUser(request));
@@ -78,5 +88,26 @@ public class UserService {
 
     public void deleteUser(Long id) {
         repository.deleteById(id);
+    }
+
+    private static final String UPLOAD_DIR = "uploads/";
+
+    public void saveUserPhoto(Long userId, MultipartFile file) throws IOException {
+        File uploadDir = new File(PHOTO_DIRECTORY);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        String fileName = userId + "_photo" + getExtension(file.getOriginalFilename());
+        Path filePath = Path.of(PHOTO_DIRECTORY, fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public String getUserPhotoPath(Long userId) {
+        return Path.of(PHOTO_DIRECTORY, userId + "_photo.jpg").toString();  // Assurez-vous que l'extension correspond
+    }
+
+    private String getExtension(String filename) {
+        return filename.substring(filename.lastIndexOf('.'));
     }
 }

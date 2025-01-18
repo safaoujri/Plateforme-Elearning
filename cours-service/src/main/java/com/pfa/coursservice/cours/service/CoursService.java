@@ -11,10 +11,18 @@ import com.pfa.coursservice.user.UserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import java.nio.file.Path;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +31,9 @@ public class CoursService {
     private final CoursRepository repository;
     private final CoursMapper mapper;
     private final UserClient userClient;
+
+    @Value("${video.upload.dir:/default/path/to/upload}")
+    private String uploadDir;
 
     /**
      * Crée un cours avec les informations données dans la requête.
@@ -99,5 +110,47 @@ public class CoursService {
 //        return repository.findById(id)
 //                .map(mapper::fromCours)
 //                .orElseThrow(() -> new EntityNotFoundException(String.format("Cours not found with id: %d", id)));
+
+    public void saveCoursVideo(Long coursId, MultipartFile file) throws IOException {
+        Cours cours = repository.findById(coursId)
+                .orElseThrow(() -> new BusinessException("Course not found"));
+
+        // Gérer le nom du fichier et le chemin
+        String fileName = coursId + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir + "/" + fileName);
+
+        // Créer le répertoire si nécessaire
+        Files.createDirectories(filePath.getParent());
+
+        // Sauvegarder le fichier vidéo sur le serveur
+        Files.write(filePath, file.getBytes());
+
+        // Mettre à jour le chemin dans la base de données
+        cours.setCheminVideo(filePath.toString());
+        repository.save(cours);
+    }
+    public String getCheminVideoById(Long coursId) {
+        Cours cours = repository.findById(coursId)
+                .orElseThrow(() -> new BusinessException("Course not found"));
+        return cours.getCheminVideo();  // Retourne le chemin de la vidéo stocké dans la base de données
+    }
+    public void saveVideoPath(Long coursId, String videoPath) {
+        try {
+            System.out.println("Tentative de mise à jour du chemin vidéo pour le cours : " + coursId);
+
+            Cours cours = repository.findById(coursId)
+                    .orElseThrow(() -> new BusinessException("Cours non trouvé"));
+
+            cours.setCheminVideo(videoPath);
+            repository.save(cours);
+
+            System.out.println("Chemin vidéo mis à jour avec succès : " + videoPath);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la mise à jour du chemin vidéo : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 
 }

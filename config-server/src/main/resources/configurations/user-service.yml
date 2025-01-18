@@ -3,7 +3,7 @@ spring:
     name: user
   datasource:
     url: jdbc:mysql://localhost:3306/user
-    username: safa
+    username: root
     password: safa
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
